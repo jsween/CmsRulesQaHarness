@@ -1,0 +1,13 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@CmsRulesQaHarness.API.BaseUrl = https://localhost:7081
+
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+{
+  "age": 67,
+  "monthlyIncome": 1200,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}

@@ -40,6 +40,7 @@ namespace CmsRulesQaHarness.API.Services
             {
                 result.IsEligible = true;
                 result.ProgramCategory = ProgramCategory.Medicare;
+                result.Reasons.Add(ValidationReasons.Age65OrOlderIncomeThreshold);
                 return result;
             }
 
