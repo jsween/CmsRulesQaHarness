@@ -1,0 +1,6 @@
+@CmsRulesQaHarness.API_HostAddress = http://localhost:5298
+
+GET {{CmsRulesQaHarness.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
