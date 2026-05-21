@@ -11,3 +11,198 @@ Content-Type: application/json
   "isBlind": false,
   "householdSize": 1
 }
+
+### Positive Test: Aged applicant qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 67,
+  "monthlyIncome": 1200,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Positive Test: Disabled applicant qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 42,
+  "monthlyIncome": 1700,
+  "isDisabled": true,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Positive Test: Blind applicant qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 35,
+  "monthlyIncome": 1500,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": true,
+  "householdSize": 1
+}
+
+### Negative Test: Aged applicant income too high
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 67,
+  "monthlyIncome": 2500,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Negative Test: Disabled applicant income too high
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 45,
+  "monthlyIncome": 2200,
+  "isDisabled": true,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Negative Test: No qualifying category
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 30,
+  "monthlyIncome": 800,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Edge Test: Applicant exactly age 65 qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 65,
+  "monthlyIncome": 1500,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Edge Test: Aged applicant exactly at income limit qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 70,
+  "monthlyIncome": 1600,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Edge Test: Aged applicant one dollar over income limit does not qualify
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 70,
+  "monthlyIncome": 1601,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Edge Test: Disabled applicant exactly at income limit qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 50,
+  "monthlyIncome": 1800,
+  "isDisabled": true,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Edge Test: Disabled applicant one dollar over income limit does not qualify
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 50,
+  "monthlyIncome": 1801,
+  "isDisabled": true,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Invalid Input: Negative age
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": -1,
+  "monthlyIncome": 1000,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Invalid Input: Negative income
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 40,
+  "monthlyIncome": -500,
+  "isDisabled": true,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
+
+### Invalid Input: Household size is zero
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 40,
+  "monthlyIncome": 1000,
+  "isDisabled": false,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 0
+}
+
+### Priority/Rule Order Test: Applicant is aged and disabled
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/json
+
+{
+  "age": 68,
+  "monthlyIncome": 1500,
+  "isDisabled": true,
+  "isPregnant": false,
+  "isBlind": false,
+  "householdSize": 1
+}
