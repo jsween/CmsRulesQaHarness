@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="CmsRulesQaHarness.API/CmsRulesQaHarness.API.csproj" />
-  <Project Path="CmsRulesQaHarness.Tests/CmsRulesQaHarness.Tests.csproj" />
+  <Project Path="CmsRulesQaHarness.Tests/CmsRulesQaHarness.Tests.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
 </Solution>
