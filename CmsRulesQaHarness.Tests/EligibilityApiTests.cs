@@ -1,5 +1,6 @@
-﻿using CmsRulesQaHarness.API.Models;
+using CmsRulesQaHarness.API.Models;
 using CmsRulesQaHarness.API.Models.Enums;
+using CmsRulesQaHarness.Tests.TestData;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -16,15 +17,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithValidMedicareApplicant_ReturnsEligibleResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 67,
-                MonthlyIncome = 1200,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.MedicareEligibleApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -43,15 +36,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithDisabledApplicant_ReturnsEligibleMedicaidResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 40,
-                MonthlyIncome = 1500,
-                HouseholdSize = 1,
-                IsDisabled = true,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.DisabledEligibleApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -70,15 +55,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithPregnantApplicant_ReturnsEligibleCHIPResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 28,
-                MonthlyIncome = 1800,
-                HouseholdSize = 2,
-                IsDisabled = false,
-                IsPregnant = true,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.PregnantEligibleApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -97,15 +74,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithBlindApplicant_ReturnsEligibleMedicaidResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 35,
-                MonthlyIncome = 2000,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = true
-            };
+            var request = EligibilityTestScenarios.BlindEligibleApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -128,15 +97,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithOverIncomeApplicant_ReturnsNotEligibleResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 67,
-                MonthlyIncome = 5000,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.OverIncomeApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -155,15 +116,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithInvalidAge_ReturnsInvalidResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = -1,
-                MonthlyIncome = 1000,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.InvalidAgeApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -182,15 +135,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithInvalidHouseholdSize_ReturnsInvalidResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 40,
-                MonthlyIncome = 1000,
-                HouseholdSize = 0,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.InvalidHouseholdSizeApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -209,15 +154,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithNegativeIncome_ReturnsInvalidResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 40,
-                MonthlyIncome = -500,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.NegativeIncomeApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -256,15 +193,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithMedicareAtExactIncomeLimit_ReturnsEligibleResult()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 70,
-                MonthlyIncome = 1600,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.MedicareAtExactIncomeLimitApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -282,15 +211,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithMedicareOneDollarOverLimit_ReturnsNotEligible()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 70,
-                MonthlyIncome = 1601,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.MedicareOneDollarOverLimitApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -308,15 +229,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithAge65Boundary_ReturnsEligibleMedicare()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 65,
-                MonthlyIncome = 1200,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.Age65BoundaryApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
@@ -334,15 +247,7 @@ namespace CmsRulesQaHarness.Tests
         public async Task DetermineEligibility_WithAge64_ReturnsNotEligibleForMedicare()
         {
             // Arrange
-            var request = new EligibilityRequest
-            {
-                Age = 64,
-                MonthlyIncome = 1200,
-                HouseholdSize = 1,
-                IsDisabled = false,
-                IsPregnant = false,
-                IsBlind = false
-            };
+            var request = EligibilityTestScenarios.Age64BoundaryApplicant;
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
