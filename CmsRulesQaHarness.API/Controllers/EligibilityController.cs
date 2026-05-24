@@ -28,7 +28,7 @@ namespace CmsRulesQaHarness.API.Controllers
         [ProducesResponseType(typeof(EligibilityResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-        public ActionResult<EligibilityResult> DetermineEligibility(EligibilityRequest request)
+        public ActionResult<EligibilityResult> DetermineEligibility([FromBody] EligibilityRequest request)
         {
             // 400 Bad Request - Null or missing required data
             if (request == null)
