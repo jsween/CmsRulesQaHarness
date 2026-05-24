@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
 
-namespace CmsRulesQaHarness.Tests
+namespace CmsRulesQaHarness.Tests.Api
 {
     public class EligibilityApiTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
     {
@@ -113,7 +113,7 @@ namespace CmsRulesQaHarness.Tests
         }
 
         [Fact]
-        public async Task DetermineEligibility_WithInvalidAge_ReturnsInvalidResult()
+        public async Task DetermineEligibility_WithInvalidAge_Returns422UnprocessableEntity()
         {
             // Arrange
             var request = EligibilityTestScenarios.InvalidAgeApplicant;
@@ -122,17 +122,16 @@ namespace CmsRulesQaHarness.Tests
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
 
             // Assert
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<EligibilityResult>();
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+            var problemDetails = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ProblemDetails>();
 
-            Assert.NotNull(result);
-            Assert.False(result.IsEligible);
-            Assert.Equal(ProgramCategory.Invalid, result.ProgramCategory);
-            Assert.Contains(ValidationReasons.AgeNegative, result.Reasons);
+            Assert.NotNull(problemDetails);
+            Assert.Equal(422, problemDetails.Status);
+            Assert.Equal("Invalid Eligibility Data", problemDetails.Title);
         }
 
         [Fact]
-        public async Task DetermineEligibility_WithInvalidHouseholdSize_ReturnsInvalidResult()
+        public async Task DetermineEligibility_WithInvalidHouseholdSize_Returns422UnprocessableEntity()
         {
             // Arrange
             var request = EligibilityTestScenarios.InvalidHouseholdSizeApplicant;
@@ -141,17 +140,16 @@ namespace CmsRulesQaHarness.Tests
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
 
             // Assert
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<EligibilityResult>();
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+            var problemDetails = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ProblemDetails>();
 
-            Assert.NotNull(result);
-            Assert.False(result.IsEligible);
-            Assert.Equal(ProgramCategory.Invalid, result.ProgramCategory);
-            Assert.Contains(ValidationReasons.HouseholdSizeInvalid, result.Reasons);
+            Assert.NotNull(problemDetails);
+            Assert.Equal(422, problemDetails.Status);
+            Assert.Equal("Invalid Eligibility Data", problemDetails.Title);
         }
 
         [Fact]
-        public async Task DetermineEligibility_WithNegativeIncome_ReturnsInvalidResult()
+        public async Task DetermineEligibility_WithNegativeIncome_Returns422UnprocessableEntity()
         {
             // Arrange
             var request = EligibilityTestScenarios.NegativeIncomeApplicant;
@@ -160,13 +158,12 @@ namespace CmsRulesQaHarness.Tests
             var response = await _client.PostAsJsonAsync("/api/eligibility/determine", request);
 
             // Assert
-            response.EnsureSuccessStatusCode();
-            var result = await response.Content.ReadFromJsonAsync<EligibilityResult>();
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+            var problemDetails = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ProblemDetails>();
 
-            Assert.NotNull(result);
-            Assert.False(result.IsEligible);
-            Assert.Equal(ProgramCategory.Invalid, result.ProgramCategory);
-            Assert.Contains(ValidationReasons.MonthlyIncomeNegative, result.Reasons);
+            Assert.NotNull(problemDetails);
+            Assert.Equal(422, problemDetails.Status);
+            Assert.Equal("Invalid Eligibility Data", problemDetails.Title);
         }
 
         [Fact]
@@ -183,6 +180,26 @@ namespace CmsRulesQaHarness.Tests
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DetermineEligibility_WithNullBody_Returns400BadRequest()
+        {
+            // Arrange - Send explicit null JSON
+            var nullContent = new StringContent(
+                "null",
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+            // Act
+            var response = await _client.PostAsync("/api/eligibility/determine", nullContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            var problemDetails = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ProblemDetails>();
+
+            Assert.NotNull(problemDetails);
+            Assert.Equal(400, problemDetails.Status);
         }
 
         #endregion
@@ -259,6 +276,24 @@ namespace CmsRulesQaHarness.Tests
             Assert.NotNull(result);
             Assert.False(result.IsEligible);
             Assert.Equal(ProgramCategory.None, result.ProgramCategory);
+        }
+
+        #endregion
+
+        #region Health Check Tests
+
+        [Fact]
+        public async Task HealthCheck_ServiceAvailable_Returns200Ok()
+        {
+            // Act
+            var response = await _client.GetAsync("/api/eligibility/health");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var healthStatus = await response.Content.ReadAsStringAsync();
+
+            Assert.Contains("healthy", healthStatus);
+            Assert.Contains("EligibilityService", healthStatus);
         }
 
         #endregion
