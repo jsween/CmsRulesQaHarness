@@ -1,6 +1,10 @@
 # For more info on HTTP files go to https://aka.ms/vs/httpfile
 @CmsRulesQaHarness.API.BaseUrl = https://localhost:7081
 
+###############################################################################
+# JSON FORMAT TESTS
+###############################################################################
+
 POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
 Content-Type: application/json
 {
@@ -206,3 +210,215 @@ Content-Type: application/json
   "isBlind": false,
   "householdSize": 1
 }
+
+###############################################################################
+# XML FORMAT TESTS
+###############################################################################
+
+### XML: Basic eligibility check
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>67</Age>
+  <MonthlyIncome>1200</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Positive Test: Aged applicant qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>67</Age>
+  <MonthlyIncome>1200</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Positive Test: Disabled applicant qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>42</Age>
+  <MonthlyIncome>1700</MonthlyIncome>
+  <IsDisabled>true</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Positive Test: Blind applicant qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>35</Age>
+  <MonthlyIncome>1500</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>true</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Negative Test: Aged applicant income too high
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>67</Age>
+  <MonthlyIncome>2500</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Negative Test: Disabled applicant income too high
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>45</Age>
+  <MonthlyIncome>2200</MonthlyIncome>
+  <IsDisabled>true</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Negative Test: No qualifying category
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>30</Age>
+  <MonthlyIncome>800</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Edge Test: Applicant exactly age 65 qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>65</Age>
+  <MonthlyIncome>1500</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Edge Test: Aged applicant exactly at income limit qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>70</Age>
+  <MonthlyIncome>1600</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Edge Test: Aged applicant one dollar over income limit does not qualify
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>70</Age>
+  <MonthlyIncome>1601</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Edge Test: Disabled applicant exactly at income limit qualifies
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>50</Age>
+  <MonthlyIncome>1800</MonthlyIncome>
+  <IsDisabled>true</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Edge Test: Disabled applicant one dollar over income limit does not qualify
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>50</Age>
+  <MonthlyIncome>1801</MonthlyIncome>
+  <IsDisabled>true</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Invalid Input: Negative age
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>-1</Age>
+  <MonthlyIncome>1000</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Invalid Input: Negative income
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>40</Age>
+  <MonthlyIncome>-500</MonthlyIncome>
+  <IsDisabled>true</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>
+
+### XML Invalid Input: Household size is zero
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>40</Age>
+  <MonthlyIncome>1000</MonthlyIncome>
+  <IsDisabled>false</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>0</HouseholdSize>
+</EligibilityRequest>
+
+### XML Priority/Rule Order Test: Applicant is aged and disabled
+POST {{CmsRulesQaHarness.API.BaseUrl}}/api/Eligibility/determine
+Content-Type: application/xml
+
+<EligibilityRequest>
+  <Age>68</Age>
+  <MonthlyIncome>1500</MonthlyIncome>
+  <IsDisabled>true</IsDisabled>
+  <IsPregnant>false</IsPregnant>
+  <IsBlind>false</IsBlind>
+  <HouseholdSize>1</HouseholdSize>
+</EligibilityRequest>

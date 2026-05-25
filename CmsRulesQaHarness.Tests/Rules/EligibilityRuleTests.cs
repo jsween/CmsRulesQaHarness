@@ -2,7 +2,7 @@
 using CmsRulesQaHarness.API.Models.Enums;
 using CmsRulesQaHarness.API.Services;
 
-namespace CmsRulesQaHarness.Tests
+namespace CmsRulesQaHarness.Tests.Rules
 {
     public class EligibilityRuleTests
     {
