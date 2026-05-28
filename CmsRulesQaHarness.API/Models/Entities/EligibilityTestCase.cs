@@ -1,4 +1,4 @@
-﻿namespace CmsRulesQaHarness.API.Models
+﻿namespace CmsRulesQaHarness.API.Models.Entities
 {
     public class EligibilityTestCase
     {

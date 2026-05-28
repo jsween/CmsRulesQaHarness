@@ -1,4 +1,6 @@
 using CmsRulesQaHarness.API.Services;
+using CmsRulesQaHarness.API.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,17 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<EligibilityDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("EligibilityDatabase")));
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<EligibilityDbContext>();
+    await dbContext.Database.EnsureCreatedAsync();
+    await SeedData.InitializeAsync(dbContext);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
