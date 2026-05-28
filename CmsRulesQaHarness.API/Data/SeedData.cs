@@ -7,8 +7,6 @@ public static class SeedData
 {
     public static async Task InitializeAsync(EligibilityDbContext context)
     {
-        await context.Database.EnsureCreatedAsync();
-
         if (await context.Households.AnyAsync())
         {
             return;

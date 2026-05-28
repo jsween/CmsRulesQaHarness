@@ -22,6 +22,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<EligibilityDbContext>();
+    await dbContext.Database.EnsureCreatedAsync();
     await SeedData.InitializeAsync(dbContext);
 }
 
